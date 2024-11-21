@@ -9,24 +9,27 @@ interface Coordinates {
 }
 
 // TODO: Define a class for the Weather object
-// class Weather {
-//   //api's 
-//   //Properties based off main.ts - renderCurrentWeather and Requirements image
-//   //coordinate 
-//   private city: string;
-//   private date: string;
-//   private icon: string;
-//   private iconDescription: string;
-//   private tempF: string;
-//   private windspeed: string;
-//   private humidity: string;
+class Weather {
+  //api's 
+  //Properties based off main.ts - renderCurrentWeather and Requirements image
+  
+  private city: string;
+  private date: string;
+  private icon: string;
+  private tempF: string;
+  private windspeed: string;
+  private humidity: string;
 
-//   //constructor
-//   // constructor() {
-//   //   this.city = 
-//   // }
-
-// }
+  //constructor
+  constructor(city:string,date:string,icon:string,tempF:string,windspeed:string,humidity:string) {
+    this.city = city;
+    this.date = date;
+    this.icon = icon;
+    this.tempF = tempF;
+    this.windspeed = windspeed;
+    this.humidity = humidity;
+  }
+}
 
 
 
@@ -84,7 +87,11 @@ class WeatherService {
 
   
   // TODO: Create buildWeatherQuery method
- // private buildWeatherQuery(coordinates: Coordinates): string {}
+  private buildWeatherQuery(coordinates: Coordinates): string {
+    //return `${this.baseURL}/data/2.5/forecast?lat=${coordinates.lat}&lon=${coordinates.lon}&appid=${this.apiKey}`;
+    //onecall api
+    return `${this.baseURL}/data/3.0/onecall?lat=${coordinates.lat}&lon=${coordinates.lon}&exclude=hourly,minutely,alerts&appid=${this.apiKey}`;
+  }
   
   // TODO: Create fetchAndDestructureLocationData method
   private async fetchAndDestructureLocationData() {
@@ -92,20 +99,30 @@ class WeatherService {
     //destructureLocationData(data)
     const locationData = await this.fetchLocationData(this.buildGeocodeQuery());
     return this.destructureLocationData(locationData);
-
-
   }
   
-  // TODO: Create fetchWeatherData method
-  // private async fetchWeatherData(coordinates: Coordinates) {
-  //   // buildWeatherQuery
-  //   //make weather api call
-  //   //parseCurrentWeather()
-  //   //buildForecastArray()
-  // }
+ // TODO: Create fetchWeatherData method
+  private async fetchWeatherData(coordinates: Coordinates) {
+    // buildWeatherQuery
+    const weatherQuery = this.buildWeatherQuery(coordinates);
+
+    //make weather api call
+    let response = await fetch(weatherQuery);
+    console.log(response);
+
+    let data:Weather[] = await response.json();
+    console.log(data);
+    //return data[0];
+
+    //call parseCurrentWeather to fetch the Current day Weather
+    const currentweather: Weather = this.parseCurrentWeather(data);
+
+    //call buildForecastArray to fetch the ForecastWeather for 5 days
+    const forecastArray =  this.buildForecastArray(currentweather,data);
+  }
   
   // TODO: Build parseCurrentWeather method
-  // private parseCurrentWeather(response: any): Weather {
+  private parseCurrentWeather(response: any): Weather {
   //   //take the response object from the API call and return a weather object of some sort
   //   //const {weather[0]:{icon:fetchedIcon,description}} = response;
   //   const fetchedicon = response.weather[0].icon;
@@ -114,14 +131,15 @@ class WeatherService {
   //   const currentweather: Weather = {
   //     icon:icon
 
-  //   }
+  }
 
   // }
   
   // TODO: Complete buildForecastArray method
-  // private buildForecastArray(currentWeather: Weather, weatherData: any[]) {
-  //   // take five-day forecast weather object and return just the forecast obj we care
-  // }
+  private buildForecastArray(currentWeather: Weather, weatherData: any[]) {
+    // take five-day forecast weather object and return just the forecast obj we care
+
+  }
   
   // TODO: Complete getWeatherForCity method
   async getWeatherForCity(city: string) {
@@ -129,15 +147,12 @@ class WeatherService {
     this.city = city;
     const coordinates = await this.fetchAndDestructureLocationData();
     //console.log(coordinates);
-    //fetchLocationData 
+
     //fetchWeatherData
-    // return [todaysweather, tomorrowsWeather,....]
-
-    //set the cityname member if its not already set
-
-  }
+    const weatherdata = await this.fetchWeatherData(coordinates);
    
-    
+  }
+      
 }
 
 export default new WeatherService();

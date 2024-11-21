@@ -20,7 +20,7 @@ class HistoryService {
 
   private async read() {
     // read if it exists, return an empty array otherwise
-    return await fs.readFile('db/db.json', {
+    return await fs.readFile('db/searchHistory.json', {
       flag: 'a+',
       encoding: 'utf8'
     })
@@ -29,7 +29,7 @@ class HistoryService {
   // TODO: Define a write method that writes the updated cities array to the searchHistory.json file
   private async write(cities: City[]) {
     //dump entier array to the json file overwriting what was there
-    return await fs.writeFile('db/db.json', JSON.stringify(cities, null, '\t'));
+    return await fs.writeFile('db/searchHistory.json', JSON.stringify(cities, null, '\t'));
   }
   
   // TODO: Define a getCities method that reads the cities from the searchHistory.json file and returns them as an array of City objects

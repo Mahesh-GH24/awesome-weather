@@ -3,14 +3,18 @@ const router = Router();
 
 import HistoryService from '../../service/historyService.js';
 import WeatherService from '../../service/weatherService.js';
-import historyService from '../../service/historyService.js';
+import historyService2 from '../../service/historyService.js';
+
+
 
 // TODO: POST Request with city name to retrieve weather data
+//localhost:3001/weather/api
+
 router.post('/', async (req: Request, res: Response) => {
   // TODO: GET weather data from city name
-  const cityname = req.body.cityname;
-  const weatherdata = await WeatherService.getWeatherForCity(cityname);
-  res.json(weatherdata);
+  const cityname = req.body.cityName;
+  const weatherdata:any = await WeatherService.getWeatherForCity(cityname);
+  //res.json(weatherdata);
 
   // TODO: save city to search history
   await HistoryService.addCity(cityname);
@@ -24,9 +28,11 @@ router.post('/', async (req: Request, res: Response) => {
 });
 
 // TODO: GET search history - DONE
-router.get('/history', async (req: Request, res: Response) => {
+//localhost:3001/weather/api/history
+
+router.get('/history', async (_req: Request, res: Response) => {
   try {
-    const savedCities = await historyService.getCities();
+    const savedCities = await historyService2.getCities();
     res.json(savedCities);
   } catch (err) {
     console.log(err);
@@ -35,12 +41,13 @@ router.get('/history', async (req: Request, res: Response) => {
 });
 
 // * BONUS TODO: DELETE city from search history - DONE
+//localhost:3001/weather/api/history/<city id>
 router.delete('/history/:id', async (req: Request, res: Response) => {
   try{
     if (!req.params.id){
       res.status(400).json({msg: 'City id is required'});
     }
-    await historyService.removeCity(req.params.id);
+    await historyService2.removeCity(req.params.id);
     res.json({ success: 'City successfully removed from search history' });
   } catch (err) {
     console.log(err);

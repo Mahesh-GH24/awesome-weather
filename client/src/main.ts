@@ -58,7 +58,9 @@ const fetchSearchHistory = async () => {
       'Content-Type': 'application/json',
     },
   });
+  console.log('Test History:',history);
   return history;
+  console.log('History:',history);
 };
 
 const deleteCityFromHistory = async (id: string) => {

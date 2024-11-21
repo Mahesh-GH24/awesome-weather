@@ -1,10 +1,14 @@
 [
-    {
-      "name": "Chicago",
-      "id": ""
-    },
-    {
-      "name": "Minneapolis",
-      "id": ""
-    }
-  ]
+	{
+		"name": "oakland",
+		"id": "0195bd5c-3d0c-463e-8488-0d9ffa295f3b"
+	},
+	{
+		"name": "Maple grove",
+		"id": "38142e2b-5de4-403d-b5fc-44c8813d2487"
+	},
+	{
+		"name": "Mankato",
+		"id": "f82500fc-819b-4015-99bc-3e63ca216945"
+	}
+]

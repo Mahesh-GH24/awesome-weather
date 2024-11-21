@@ -20,7 +20,7 @@ class HistoryService {
 
   private async read() {
     // read if it exists, return an empty array otherwise
-    return await fs.readFile('db/searchHistory.json', {
+    return await fs.readFile('db/db.json', {
       flag: 'a+',
       encoding: 'utf8'
     })

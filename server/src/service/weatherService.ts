@@ -13,20 +13,22 @@ class Weather {
   //api's 
   //Properties based off main.ts - renderCurrentWeather and Requirements image
   
-  private city: string;
-  private date: string;
-  private icon: string;
-  private tempF: string;
-  private windspeed: string;
-  private humidity: string;
+  city: string;
+  date: string;
+  icon: string;
+  iconDescription: string;
+  tempF: string;
+  windSpeed: string;
+  humidity: string;
 
   //constructor
-  constructor(city:string,date:string,icon:string,tempF:string,windspeed:string,humidity:string) {
+  constructor(city:string,date:string,icon:string,iconDescription:string,tempF:string,windspeed:string,humidity:string) {
     this.city = city;
     this.date = date;
     this.icon = icon;
+    this.iconDescription = iconDescription;
     this.tempF = tempF;
-    this.windspeed = windspeed;
+    this.windSpeed = windspeed;
     this.humidity = humidity;
   }
 }
@@ -88,9 +90,9 @@ class WeatherService {
   
   // TODO: Create buildWeatherQuery method
   private buildWeatherQuery(coordinates: Coordinates): string {
-    //return `${this.baseURL}/data/2.5/forecast?lat=${coordinates.lat}&lon=${coordinates.lon}&appid=${this.apiKey}`;
+    return `${this.baseURL}/data/2.5/forecast?lat=${coordinates.lat}&lon=${coordinates.lon}&units=imperial&appid=${this.apiKey}`;
     //onecall api
-    return `${this.baseURL}/data/3.0/onecall?lat=${coordinates.lat}&lon=${coordinates.lon}&exclude=hourly,minutely,alerts&appid=${this.apiKey}`;
+    //return `${this.baseURL}/data/3.0/onecall?lat=${coordinates.lat}&lon=${coordinates.lon}&exclude=hourly,minutely,alerts&appid=${this.apiKey}`;
   }
   
   // TODO: Create fetchAndDestructureLocationData method
@@ -108,37 +110,53 @@ class WeatherService {
 
     //make weather api call
     let response = await fetch(weatherQuery);
-    console.log(response);
+    //console.log(response);
 
-    let data:Weather[] = await response.json();
-    console.log(data);
+    let data = await response.json();
+    //console.log(data.list[0]);
     //return data[0];
 
     //call parseCurrentWeather to fetch the Current day Weather
-    const currentweather: Weather = this.parseCurrentWeather(data);
+    const currentweather: Weather = this.parseCurrentWeather(data.list[0]);
+    //console.log(currentweather);
 
     //call buildForecastArray to fetch the ForecastWeather for 5 days
-    const forecastArray =  this.buildForecastArray(currentweather,data);
+   const forecastArray =  this.buildForecastArray(currentweather,data.list);
+   //console.log(forecastArray);
+   return forecastArray;
   }
   
   // TODO: Build parseCurrentWeather method
   private parseCurrentWeather(response: any): Weather {
-  //   //take the response object from the API call and return a weather object of some sort
-  //   //const {weather[0]:{icon:fetchedIcon,description}} = response;
-  //   const fetchedicon = response.weather[0].icon;
-  //   const description = response.weather[0].description;
-  //   //weather = ""id:31,"main":"clouds",
-  //   const currentweather: Weather = {
-  //     icon:icon
-
+    const currentweather =  new Weather(
+      this.city,
+      response.dt_txt,
+      response.weather[0].icon,
+      response.weather[0].description,
+      response.main.temp,
+      response.wind.speed,
+      response.main.humidity
+    );
+    return currentweather;
   }
 
   // }
   
   // TODO: Complete buildForecastArray method
-  private buildForecastArray(currentWeather: Weather, weatherData: any[]) {
-    // take five-day forecast weather object and return just the forecast obj we care
-
+   private buildForecastArray(currentWeather: Weather, weatherData: any[]) {
+  //   // take five-day forecast weather object and return just the forecast obj we care
+    let forecast = [];
+    const filterData = weatherData.filter((data:any)=>{
+      return data.dt_txt.includes('12:00:00')
+    })
+    //console.log(filterData.length);
+    for (let i=0;i < filterData.length; i++){
+      forecast.push(new Weather(this.city,filterData[i].dt_txt,filterData[i].weather[0].icon,filterData[i].weather[0].description,
+      filterData[i].main.temp,filterData[i].wind.speed,filterData[i].main.humidity
+      ));
+    }
+   // console.log(forecast);
+    return [currentWeather, forecast];
   }
   
   // TODO: Complete getWeatherForCity method
@@ -150,7 +168,7 @@ class WeatherService {
 
     //fetchWeatherData
     const weatherdata = await this.fetchWeatherData(coordinates);
-   
+    return weatherdata; 
   }
       
 }
